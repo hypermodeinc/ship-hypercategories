@@ -25,7 +25,7 @@ export function submit(gameID: string, player: string, responses: string): strin
   const gameInfo = getGameInfo(gameID);
   console.log(`submitResponse for ${player}: ${rs}`)
   const evalutation = evaluatePlayerResponses(gameInfo.letter, gameInfo.categories, responseArray);
-  const response = addResponse(player, gameID, rs, evalutaion.entailment, evalutaion.isValidLetter, evalutation.inDictionary);
+  const response = addResponse(player, gameID, rs, evalutation.entailment, evalutation.isValidLetter, evalutation.inDictionary);
   return response;
 }
 
