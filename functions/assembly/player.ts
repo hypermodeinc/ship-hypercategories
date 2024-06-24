@@ -40,14 +40,14 @@ export function evaluatePlayerResponses(letter: string, categories: string, resp
             const response = responses[i].trim().toLowerCase()
             if (response.startsWith(letter.toLowerCase())) {
                 isValidLetter[i] = true
-                console.log(`${response} starts with ${letter}`)
+                // console.log(`${response} starts with ${letter}`)
                 if (response.length > 1) {
                     if (isEnglishWord(response) == true) {
-                        console.log(`${response} is an English word`)
+                        // console.log(`${response} is an English word`)
                         inDictionary[i] = true
                         const hypothesis = `${response} <sep> ${category}`
                         const test = inference.getClassificationLabelsForText("smallentailment", hypothesis);
-                        console.log(`${response} entailment: ${test.get("entailment")}`)
+                        // console.log(`${response} entailment: ${test.get("entailment")}`)
                         entailment[i] = test.get("entailment")
                     }
                 }
@@ -171,11 +171,13 @@ export function computeLeaderboard(gameInfo: GameInfo): Leaderboard {
   
     for (let i = 0; i < categories.length; i++) {  
       // check similar responses among players
+      
       let responsesForCategory = new Array<string>(gameInfo.playerResponses.length); 
       for (let j = 0; j < gameInfo.playerResponses.length; j++) {
         responsesForCategory[j] = gameInfo.playerResponses[j].responses.split(",")[i];
       }
       const similarity = evaluateSimilarResponseForCategory(responsesForCategory)
+      console.log(`Similar responses for category ${categories[i]} : ${similarity}`)
       for (let j = 0; j < similarity.length; j++) {
         leaderboard.players[j].responses[i].similarResponses = similarity[j];
       }
