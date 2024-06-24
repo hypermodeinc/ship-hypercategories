@@ -19,7 +19,7 @@ export function startGame(): Game {
   };
 }
 
-export function submitResponse(gameID: string, player: string, responses: string): string {
+export function submi(gameID: string, player: string, responses: string): string {
   const responseArray = responses.split(",");
   const rs = responseArray.map<string>((response) => response.trim().toLowerCase());   
   const gameInfo = getGameInfo(gameID);
