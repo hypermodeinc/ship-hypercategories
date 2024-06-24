@@ -4,6 +4,14 @@ import {  connection, QueryVariables} from "@hypermode/functions-as";
 
 
 const DGRAPH_HOST = "dgraph-hypermode"
+
+@json
+export class Game {
+   gameID: string="1";
+   letter: string="A";
+   categories: string[] | null = null; 
+}
+
 @json
 class IdData {
     id!: string

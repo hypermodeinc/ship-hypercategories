@@ -2,6 +2,9 @@ import { addResponse } from "./db"
 import { inference } from "@hypermode/functions-as"
 import {dotProduct} from "./vector"
 import { isEnglishWord } from "./word"
+import { Game, GameInfo} from "./db";
+
+const ENTAILMENT_THRESHOLD = 0.2;
 
 export function saveHypermodeReponses(playerName:string,gameID: string, letter: string, categories: string): void {
     const responses = generateHypermodeResponses(letter, categories).split(",")
@@ -99,3 +102,105 @@ export function evaluateSimilarResponseForCategory( responses: string[]): u16[] 
     
     return match
 }
+
+@json
+class ResponseScore {
+  word: string = "";
+  evaluation: string = "";
+  isValid: bool = true;
+  entailment: f32 = 0;
+  similarResponses: u16 = 0;
+  score: f32 = 0;
+}
+
+@json
+class PlayerInfo {
+  name: string = "";
+  responses: ResponseScore[] =[];
+  score: f32 = 0;
+  createdAt: string = "";
+}
+
+@json
+export class Leaderboard {
+   game: Game | null = null;
+   players: PlayerInfo[] = [];
+}
+
+export function computeLeaderboard(gameInfo: GameInfo): Leaderboard {
+
+    console.log(`Compute leaderboard for game ${gameInfo.gameID}`)
+    const leaderboard = new Leaderboard();
+    // evaluate all responses
+    // score 0  for not starting with the letter
+    // score 0  for being too close to another reponse (other users)
+    // else score = entailment score with the category
+    // final score = sum of all scores
+    // emtailment score is already computed when user submit response
+    const categories = gameInfo.categories.split(",")
+    leaderboard.game = <Game>{
+      gameID: gameInfo.gameID,
+      letter: gameInfo.letter,
+      categories: categories
+    }
+    leaderboard.players = new Array<PlayerInfo>(gameInfo.playerResponses.length)
+    
+    for (let i = 0; i < gameInfo.playerResponses.length; i++) {
+      const entailmentList = gameInfo.playerResponses[i].entailment.split(",")
+      const isValidLetterList = gameInfo.playerResponses[i].letterValidity.split(",")
+      const inDictionaryList = gameInfo.playerResponses[i].dictionaryValidity.split(",")
+      let resp = gameInfo.playerResponses[i].responses.split(",").map<ResponseScore>((x,index) => { 
+        return <ResponseScore>{ 
+          word: x
+        }});
+      
+      for (var j = 0; j < entailmentList.length; j++) {
+        resp[j].isValid = isValidLetterList[j] == "true" && inDictionaryList[j] == "true";
+        resp[j].entailment = <f32>parseFloat(entailmentList[j]);
+      }
+      const playerInfo = <PlayerInfo>{ 
+        name: gameInfo.playerResponses[i].user, 
+        responses: resp, 
+        score: 0,
+        createdAt: gameInfo.playerResponses[i].createdAt
+      }
+      leaderboard.players[i] = playerInfo;
+    } 
+  
+    for (let i = 0; i < categories.length; i++) {  
+      // check similar responses among players
+      let responsesForCategory = new Array<string>(gameInfo.playerResponses.length); 
+      for (let j = 0; j < gameInfo.playerResponses.length; j++) {
+        responsesForCategory[j] = gameInfo.playerResponses[j].responses.split(",")[i];
+      }
+      const similarity = evaluateSimilarResponseForCategory(responsesForCategory)
+      for (let j = 0; j < similarity.length; j++) {
+        leaderboard.players[j].responses[i].similarResponses = similarity[j];
+      }
+    }
+    // compute final score
+    for (let i = 0; i < leaderboard.players.length; i++) {   
+      let playerScore = <f32>0.0 
+      for (let j = 0; j < leaderboard.players[i].responses.length; j++) {
+        const resp = leaderboard.players[i].responses[j];
+        if ((resp.isValid) && (resp.entailment > ENTAILMENT_THRESHOLD)){
+          //resp.score = resp.entailment / (resp.similarResponses + 1);
+          resp.score = 1.0 / (resp.similarResponses + 1);
+          playerScore += resp.score;
+        } else {
+          resp.score = 0;
+        }
+      }
+      leaderboard.players[i].score = <f32>Math.round(playerScore * 100) / 100.0;
+    }
+    leaderboard.players.sort((a,b) => {
+      const dateorder = (b.createdAt < a.createdAt ? 1 : -1);
+      if (b.score == a.score) {
+        return dateorder;
+      } else { 
+        return  (b.score > a.score  ? 1 : -1)
+      }
+    });
+    
+    return leaderboard;
+  }
