@@ -19,13 +19,13 @@ export function startGame(): Game {
   };
 }
 
-export function submi(gameID: string, player: string, responses: string): string {
+export function submit(gameID: string, player: string, responses: string): string {
   const responseArray = responses.split(",");
   const rs = responseArray.map<string>((response) => response.trim().toLowerCase());   
   const gameInfo = getGameInfo(gameID);
   console.log(`submitResponse for ${player}: ${rs}`)
-  const evalutaion = evaluatePlayerResponses(gameInfo.letter, gameInfo.categories, responseArray);
-  const response = addResponse(player, gameID, rs, evalutaion.entailment, evalutaion.isValidLetter, evalutaion.inDictionary);
+  const evalutation = evaluatePlayerResponses(gameInfo.letter, gameInfo.categories, responseArray);
+  const response = addResponse(player, gameID, rs, evalutaion.entailment, evalutaion.isValidLetter, evalutation.inDictionary);
   return response;
 }
 
