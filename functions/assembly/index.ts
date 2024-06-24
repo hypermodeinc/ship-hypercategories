@@ -23,6 +23,7 @@ export function submitResponse(gameID: string, player: string, responses: string
   const responseArray = responses.split(",");
   const rs = responseArray.map<string>((response) => response.trim().toLowerCase());   
   const gameInfo = getGameInfo(gameID);
+  console.log(`submitResponse for ${player}: ${rs}`)
   const evalutaion = evaluatePlayerResponses(gameInfo.letter, gameInfo.categories, responseArray);
   const response = addResponse(player, gameID, rs, evalutaion.entailment, evalutaion.isValidLetter, evalutaion.inDictionary);
   return response;

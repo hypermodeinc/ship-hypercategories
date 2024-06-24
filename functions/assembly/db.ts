@@ -153,7 +153,6 @@ export function getGameInfo(game:string): GameInfo {
     const vars = new QueryVariables();
     vars.set("id", game);
 
-  
     const result = connection.invokeGraphqlApi<GetGame>(DGRAPH_HOST,statement,vars);
     if (result.data == null) {
       const errors = result.errors
@@ -163,8 +162,10 @@ export function getGameInfo(game:string): GameInfo {
         throw new Error("getGame failed")
       }
     } 
-    
-    return (<GetGame>result.data).game
+    const gameInfo = (<GetGame>result.data).game
+    console.log(`Game ${game} - Letter ${gameInfo.letter}`)
+    console.log(`Game ${game} - Categories ${gameInfo.categories}`)
+    return gameInfo
     
   }
   

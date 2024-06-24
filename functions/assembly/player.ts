@@ -51,8 +51,10 @@ export function evaluatePlayerResponses(letter: string, categories: string, resp
                         entailment[i] = test.get("entailment")
                     }
                 }
-            }
+            }   
         }
+        console.log(`Response ${responses[i]} for category ${category}`)
+        console.log(`isValid letter: ${isValidLetter[i]}, is english word: ${inDictionary[i]}, entailment: ${entailment[i]}`)
     }
      
     return {entailment, isValidLetter, inDictionary}
