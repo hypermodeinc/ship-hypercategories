@@ -72,11 +72,10 @@ export function evaluatePlayerResponsesLocal(letter: string, categories: string,
         entailment.push(<f32>Math.random())
         isValidLetter.push(true)
         inDictionary.push(true)
-    }
-     
+    } 
     return {entailment, isValidLetter, inDictionary}
-
 }
+
 const SIMILARITY_THRESHOLD = 0.85
 export function evaluateSimilarResponseForCategory( responses: string[]): u16[] {
     // for each response evaluate if the response is similar to another response
@@ -97,11 +96,9 @@ export function evaluateSimilarResponseForCategory( responses: string[]): u16[] 
             if (similarity > SIMILARITY_THRESHOLD ) { // found similar responses = score 0
                 match[i] +=1
                 match[j] +=1
-            }              
-             
+            }                
         }
     }
-    
     return match
 }
 
