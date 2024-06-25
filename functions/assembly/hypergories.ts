@@ -11,7 +11,7 @@ export function getRandomLetter(): string {
     return alpha.at(index);
   }
   
-export function getRandonCategories(): string[] {
+export function getRandomCategories(): string[] {
     var categories = [
       "A thing to do in summer",
       "Flower",

@@ -1,13 +1,13 @@
 import { Game, addGame, getGameInfo, addResponse} from "./db";
 import { Leaderboard, computeLeaderboard, saveHypermodeReponses, evaluatePlayerResponses,evaluatePlayerResponsesLocal} from "./player";
-import { getRandomLetter, getRandonCategories} from "./hypergories";
+import { getRandomLetter, getRandomCategories} from "./hypergories";
 
 export { getGameInfo, getCurrentGameInfo} from "./db";
 
 
 export function startGame(): Game {
   const letter = getRandomLetter();
-  const categories = getRandonCategories();
+  const categories = getRandomCategories();
   const categoriesString = categories.join(", ");
   const gameID = addGame(letter,categoriesString );
   saveHypermodeReponses("HypermodeInternal",gameID,letter,categoriesString)
