@@ -1,7 +1,7 @@
 /* Helper functions for Scattergories game
  */
 export function getRandomLetter(): string {
-  /* following string created by openai asking
+  /* following string created by llama asking
     create a string containing all letters of the alphabet at least once and  in which each letter appears with the probability of a letter being the first letter of an English word.
     */
 

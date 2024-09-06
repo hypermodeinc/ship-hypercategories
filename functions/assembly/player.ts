@@ -40,7 +40,7 @@ function generateHypermodeResponses(
     "${categories}".
     Respond with one word per category, separated by a comma.`;
   console.log("Prompt: " + prompt);
-  const responses = inference.generateText("openai", "", prompt);
+  const responses = inference.generateText("text-generator", "", prompt);
   return responses;
 }
 class Evaluation {
